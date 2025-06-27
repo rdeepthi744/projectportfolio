@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payroll Management System Overview</title>
+
+  <!-- Minimal in-page styling -->
+  <style>
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      line-height:1.6;
+      margin:0;
+      padding:0 1rem 3rem;
+      color:#222;
+      background:#fafafa;
+    }
+    header{
+      background:#005f99;
+      color:#fff;
+      padding:1.5rem 1rem;
+      text-align:center;
+      margin-bottom:2rem;
+    }
+    h1{margin:0;font-size:2rem}
+    h2{color:#005f99;margin-top:2rem}
+    nav{
+      background:#e5f4ff;
+      padding:0.5rem 1rem;
+      border-left:4px solid #005f99;
+    }
+    nav a{
+      margin-right:1rem;
+      color:#005f99;
+      text-decoration:none;
+      font-weight:bold;
+    }
+    section{max-width:900px;margin:0 auto}
+    code,pre{
+      background:#f0f0f0;
+      border-left:4px solid #005f99;
+      padding:0.75rem;
+      overflow-x:auto;
+      display:block;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin:1rem 0;
+      font-size:0.95rem;
+    }
+    th,td{
+      border:1px solid #ddd;
+      padding:0.5rem;
+      text-align:left;
+    }
+    th{background:#e5f4ff}
+    footer{
+      margin-top:3rem;
+      font-size:0.85rem;
+      text-align:center;
+      color:#555;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Payroll Management System</h1>
+    <p>A detailed guide for HR, finance, and software teams</p>
+  </header>
+
+  <!-- Quick navigation -->
+  <nav>
+    <a href="#intro">Introduction</a>
+    <a href="#workflow">Payroll Workflow</a>
+    <a href="#components">Core Components</a>
+    <a href="#compliance">Compliance</a>
+    <a href="#implementation">Implementation</a>
+    <a href="#reports">Reports&nbsp;&amp;&nbsp;Metrics</a>
+    <a href="#challenges">Challenges</a>
+    <a href="#conclusion">Conclusion</a>
+  </nav>
+
+  <!-- Sections -->
+  <section id="intro">
+    <h2>1&nbsp;·&nbsp;Introduction</h2>
+    <p>
+      Payroll Management is the administrative process of calculating and distributing wages,
+      withholding taxes, remitting statutory contributions, and keeping accurate records.
+      A reliable payroll system is mission-critical for <em>employee satisfaction</em>, 
+      <em>regulatory compliance</em>, and <em>financial integrity</em>.
+    </p>
+  </section>
+
+  <section id="workflow">
+    <h2>2&nbsp;·&nbsp;End-to-End Payroll Workflow</h2>
+    <ol>
+      <li><strong>Data Collection</strong> – Gather employee information, attendance, overtime, and benefits.</li>
+      <li><strong>Gross Pay Calculation</strong> – Compute base salary plus allowances, bonuses, overtime.</li>
+      <li><strong>Deductions &amp; Taxes</strong> – Apply statutory deductions (income tax, social security, provident fund) and voluntary deductions.</li>
+      <li><strong>Net Pay Verification</strong> – Generate preview reports for HR and finance sign-off.</li>
+      <li><strong>Disbursement</strong> – Transfer net salary via bank, wallet, or cheque.</li>
+      <li><strong>Reporting &amp; Filing</strong> – Issue payslips and file returns with government agencies.</li>
+      <li><strong>Archival</strong> – Store payroll journals and employee ledgers for audits.</li>
+    </ol>
+  </section>
+
+  <section id="components">
+    <h2>3&nbsp;·&nbsp;Core Components of a Payroll System</h2>
+    <ul>
+      <li><strong>Employee Master Data:</strong> Personal details, tax IDs, bank accounts.</li>
+      <li><strong>Time &amp; Attendance:</strong> Clock-in/out, leave, overtime tracking.</li>
+      <li><strong>Earnings &amp; Deductions Engine:</strong> Configurable formulas for salary items.</li>
+      <li><strong>Tax Calculation Module:</strong> Country-specific rules, exemptions, slabs.</li>
+      <li><strong>Payslip Generator:</strong> PDF/HTML payslips with itemized details.</li>
+      <li><strong>Compliance &amp; Reporting:</strong> E-filing, ledger posting, audit trails.</li>
+      <li><strong>Security &amp; Access Control:</strong> Role-based permissions, encryption.</li>
+    </ul>
+  </section>
+
+  <section id="compliance">
+    <h2>4&nbsp;·&nbsp;Regulatory Compliance Highlights</h2>
+    <p>
+      Exact rules vary by jurisdiction; a modern system typically handles:
+    </p>
+    <ul>
+      <li>Income-tax withholding (e.g., Form 16 in India, W-2 in the US)</li>
+      <li>Social insurance / provident fund contributions</li>
+      <li>Professional tax, labor welfare fund, gratuity provisioning</li>
+      <li>Minimum-wage adherence and overtime limits</li>
+      <li>Data-protection mandates (GDPR, HIPAA, etc.)</li>
+    </ul>
+  </section>
+
+  <section id="implementation">
+    <h2>5&nbsp;·&nbsp;Implementation Snippet (SQL&nbsp;+&nbsp;Python)</h2>
+    <pre><code class="language-sql">
+-- 1. Simple payroll schema
+CREATE TABLE employee (
+  emp_id       INT PRIMARY KEY,
+  full_name    VARCHAR(80),
+  basic_pay    DECIMAL(10,2),
+  bank_account VARCHAR(34),
+  tax_code     VARCHAR(10)
+);
+
+CREATE TABLE attendance (
+  emp_id  INT,
+  work_month DATE,
+  present_days INT,
+  overtime_hours DECIMAL(5,2),
+  FOREIGN KEY(emp_id) REFERENCES employee(emp_id)
+);
+    </code></pre>
+
+    <pre><code class="language-python">
+# 2. Net-pay calculation (Python pseudo-code)
+BASIC_TAX_RATE = 0.10   # 10 % flat for demo
+
+def compute_net_pay(basic, overtime_hours):
+    overtime_pay = overtime_hours * (basic / 160) * 1.5
+    gross = basic + overtime_pay
+    tax   = gross * BASIC_TAX_RATE
+    net   = gross - tax
+    return net, gross, tax
+    </code></pre>
+  </section>
+
+  <section id="reports">
+    <h2>6&nbsp;·&nbsp;Key Reports &amp; Metrics</h2>
+    <table>
+      <thead>
+        <tr><th>Report</th><th>Purpose</th><th>Frequency</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Payslip</td><td>Employee wage statement</td><td>Every pay cycle</td></tr>
+        <tr><td>Payroll Register</td><td>Line-item payroll summary</td><td>Every pay cycle</td></tr>
+        <tr><td>Tax Remittance Sheet</td><td>Details of withheld tax</td><td>Monthly / Quarterly</td></tr>
+        <tr><td>General Ledger Journal</td><td>Accounting entries for ERP</td><td>Every pay cycle</td></tr>
+        <tr><td>Head-count &amp; Cost Report</td><td>HR budgeting &amp; analytics</td><td>Monthly</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="challenges">
+    <h2>7&nbsp;·&nbsp;Common Challenges</h2>
+    <ul>
+      <li><strong>Regulatory Complexity:</strong> Changing laws require frequent rule updates.</li>
+      <li><strong>Data Accuracy:</strong> Incomplete or incorrect attendance leads to pay disputes.</li>
+      <li><strong>Scalability:</strong> Large enterprises must process thousands of records in minutes.</li>
+      <li><strong>Security &amp; Privacy:</strong> Payroll data is highly sensitive—strong encryption and audits are mandatory.</li>
+      <li><strong>Global Operations:</strong> Multi-country payroll needs localization for currency, language, and tax rules.</li>
+    </ul>
+  </section>
+
+  <section id="conclusion">
+    <h2>8&nbsp;·&nbsp;Conclusion</h2>
+    <p>
+      A modern Payroll Management System automates complex calculations, ensures compliance,
+      and boosts employee trust by delivering error-free, on-time paychecks. Whether you adopt
+      a SaaS platform or build in-house, focus on <em>accuracy</em>, <em>security</em>,
+      and <em>regulatory agility</em> for long-term success.
+    </p>
+  </section>
+
+  <footer>
+    © 2025 — Educational demo page. Adapt modules and tax logic to your jurisdiction before production use.
+  </footer>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lung X-ray Disease Detection with CNN</title>
+
+  <!-- Minimal in-page styling for readability -->
+  <style>
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0 1rem 3rem;
+      color:#222;
+      background:#fafafa;
+    }
+    header{
+      background:#006d77;
+      color:#fff;
+      padding:1.5rem 1rem;
+      text-align:center;
+      margin-bottom:2rem;
+    }
+    h1{margin:0;font-size:2rem}
+    h2{color:#006d77;margin-top:2rem}
+    nav{
+      background:#e0fbfc;
+      padding:0.5rem 1rem;
+      border-left:4px solid #006d77;
+    }
+    nav a{
+      margin-right:1rem;
+      color:#006d77;
+      text-decoration:none;
+      font-weight:bold;
+    }
+    section{max-width:900px;margin:0 auto}
+    code,pre{
+      background:#f0f0f0;
+      border-left:4px solid #006d77;
+      padding:0.75rem;
+      overflow-x:auto;
+      display:block;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin:1rem 0;
+      font-size:0.95rem;
+    }
+    th,td{
+      border:1px solid #ddd;
+      padding:0.5rem;
+      text-align:left;
+    }
+    th{background:#e0fbfc}
+    footer{
+      margin-top:3rem;
+      font-size:0.85rem;
+      text-align:center;
+      color:#555;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Lung X-ray Disease Detection Using Convolutional Neural Networks</h1>
+    <p>An end-to-end overview for data scientists and healthcare technologists</p>
+  </header>
+
+  <!-- Quick navigation links -->
+  <nav>
+    <a href="#intro">Introduction</a>
+    <a href="#workflow">Workflow</a>
+    <a href="#dataset">Datasets</a>
+    <a href="#cnn">CNN Architecture</a>
+    <a href="#implementation">Implementation</a>
+    <a href="#evaluation">Evaluation & Results</a>
+    <a href="#challenges">Challenges</a>
+    <a href="#conclusion">Conclusion</a>
+  </nav>
+
+  <!-- Content Sections -->
+  <section id="intro">
+    <h2>1&nbsp;·&nbsp;Introduction</h2>
+    <p>
+      Chest radiography (CXR) is the most common medical imaging modality for diagnosing lung diseases such as 
+      pneumonia, tuberculosis, and—recently—COVID-19. Manual reading is time-consuming and subject to inter-observer
+      variability. Convolutional Neural Networks (CNNs) automate feature extraction directly from pixel data, enabling
+      high-accuracy, near-real-time classification that aids radiologists in decision-making.
+    </p>
+  </section>
+
+  <section id="workflow">
+    <h2>2&nbsp;·&nbsp;Overall Workflow</h2>
+    <ol>
+      <li><strong>Data Collection</strong> – Gather labeled CXR images.</li>
+      <li><strong>Pre-processing</strong> – Resize, normalize, augment.</li>
+      <li><strong>Model Design</strong> – Choose or build a CNN architecture.</li>
+      <li><strong>Training</strong> – Optimize weights using training data.</li>
+      <li><strong>Evaluation</strong> – Validate on unseen data & compute metrics.</li>
+      <li><strong>Deployment</strong> – Integrate into PACS or web dashboards.</li>
+    </ol>
+  </section>
+
+  <section id="dataset">
+    <h2>3&nbsp;·&nbsp;Popular Datasets</h2>
+    <ul>
+      <li><strong>NIH ChestX-ray14</strong> – 112 K images, 14 disease labels.</li>
+      <li><strong>RSNA Pneumonia Detection</strong> – 30 K images, bounding-box annotations.</li>
+      <li><strong>CheXpert</strong> – 224 K images, 14 labels with uncertainty handling.</li>
+      <li><strong>COV19-CXRD</strong> – COVID-19-focused dataset for multi-class tasks.</li>
+    </ul>
+  </section>
+
+  <section id="cnn">
+    <h2>4&nbsp;·&nbsp;Typical CNN&nbsp;Architecture</h2>
+    <p>
+      While custom networks can be built, transfer learning on proven backbones (e.g., ResNet-50, DenseNet-121, EfficientNet)
+      often yields superior performance with limited data.
+    </p>
+    <pre><code>
+Input (224 × 224 grayscale image)
+──► Convolution 7×7, 64 filters ─► BatchNorm ─► ReLU ─► MaxPool
+──► Residual / Dense blocks × N (feature hierarchy)
+──► Global Average Pooling
+──► Fully Connected (Dense) Layer, dropout 0.5
+──► Sigmoid / Softmax (disease probabilities)
+    </code></pre>
+  </section>
+
+  <section id="implementation">
+    <h2>5&nbsp;·&nbsp;Implementation Snippet (Keras + TensorFlow)</h2>
+    <pre><code class="language-python">
+import tensorflow as tf
+from tensorflow.keras.applications import DenseNet121
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
+from tensorflow.keras.models import Model
+
+# 1. Load backbone with ImageNet weights (transfer learning)
+base_model = DenseNet121(weights='imagenet', include_top=False, input_shape=(224,224,3))
+
+# 2. Freeze lower layers (optional)
+for layer in base_model.layers[:-20]:
+    layer.trainable = False
+
+# 3. Add custom head
+x = GlobalAveragePooling2D()(base_model.output)
+x = Dropout(0.5)(x)
+outputs = Dense(1, activation='sigmoid')(x)  # binary classification (e.g., pneumonia vs. normal)
+
+model = Model(inputs=base_model.input, outputs=outputs)
+model.compile(optimizer=tf.keras.optimizers.Adam(1e-4),
+              loss='binary_crossentropy',
+              metrics=['accuracy', tf.keras.metrics.AUC()])
+
+# 4. Train
+model.fit(train_ds, epochs=25, validation_data=val_ds)
+    </code></pre>
+  </section>
+
+  <section id="evaluation">
+    <h2>6&nbsp;·&nbsp;Evaluation &amp; Sample Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th><th>Value (Example)</th><th>Interpretation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Accuracy</td><td>94.8 %</td><td>Overall correctness</td>
+        </tr>
+        <tr>
+          <td>AUC-ROC</td><td>0.978</td><td>Probability the model ranks a random positive higher than a random negative</td>
+        </tr>
+        <tr>
+          <td>Sensitivity (Recall)</td><td>92.3 %</td><td>True-positive rate—miss fewer diseased cases</td>
+        </tr>
+        <tr>
+          <td>Specificity</td><td>96.6 %</td><td>True-negative rate—limit false alarms</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      High AUC and balanced sensitivity/specificity indicate robust clinical utility, though datasets and thresholds should be tuned
+      for the target population.
+    </p>
+  </section>
+
+  <section id="challenges">
+    <h2>7&nbsp;·&nbsp;Key Challenges & Considerations</h2>
+    <ul>
+      <li><strong>Data Imbalance:</strong> Rare diseases yield few positive samples—use augmentation, focal loss, or reweighting.</li>
+      <li><strong>Label Noise:</strong> Many public datasets rely on NLP reports → noisy ground truth.</li>
+      <li><strong>Domain Shift:</strong> Different hospitals & scanner settings can degrade performance → domain adaptation needed.</li>
+      <li><strong>Explainability:</strong> Grad-CAM or saliency maps help clinicians trust predictions.</li>
+      <li><strong>Regulatory Compliance:</strong> Medical AI must follow standards (e.g., FDA, CE) before deployment.</li>
+    </ul>
+  </section>
+
+  <section id="conclusion">
+    <h2>8&nbsp;·&nbsp;Conclusion</h2>
+    <p>
+      CNN-based lung X-ray analysis has reached near-expert accuracy, offering scalable, low-cost triage tools for global healthcare.
+      Nonetheless, rigorous validation, ethical oversight, and seamless integration with clinical workflows remain essential
+      for widespread adoption.
+    </p>
+  </section>
+
+  <footer>
+    © 2025 — Prepared for educational/demo purposes. Datasets: NIH, RSNA, CheXpert. Frameworks: TensorFlow / Keras.
+  </footer>
+</body>
+</html>
