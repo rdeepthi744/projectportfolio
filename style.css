@@ -21,11 +21,9 @@ header {
 }
 
 .logo{
-   font-family: var(--font-pixel);
-  font-size: 1.5rem;
-  color: var(--primary-color);
-  border-radius: 100%;
-  margin-top: 20px;
+   
+  border-radius: 50%;
+  
 }
 nav {
   max-width: 1200px;
